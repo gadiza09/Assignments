@@ -1,8 +1,8 @@
 import csv
 
-from datetime import datetime
-
 import pygal
+
+from datetime import datetime
 
 filename = "activity.csv"
 with open(filename) as f:
@@ -10,10 +10,23 @@ with open(filename) as f:
     reader = csv.reader(f)
     header_row = next(reader)
 
-    steps = []
+    missing = 0
+    for row in reader:
+        if row[0] == "NA":
+            missing +=1
+
+    print("The number of missing values is: " + str(missing))
+
+filename = "activity.csv"
+with open(filename) as f1:
+
+    reader1 = csv.reader(f1)
+    header_row = next(reader1)
+
+    newSteps = []
     stepping = 0
     current_date = 0
-    for row in reader:
+    for row in reader1:
         current_dates = datetime.strptime(row[1], "%Y-%m-%d")
         if current_dates == current_date:
             if row[0] != "NA":
@@ -22,33 +35,25 @@ with open(filename) as f:
 
         else:
             current_date = datetime.strptime(row[1], "%Y-%m-%d")
-            steps.append(stepping)
+            newSteps.append(stepping)
             stepping = 0
             if row[0] != "NA":
                 step = int(row[0])
                 stepping += step
 
-    steps.append(stepping)
-
-del steps[0]
-print(steps)
-
+    newSteps.append(stepping)
 
 hist = pygal.Bar()
 hist.title = "Number of Steps"
 hist.x_title = "Days"
 hist.y_title = "Steps"
-hist.add("Steps", steps)
-hist.render_to_file("histogramTotalSteps.svg")
+hist.add("Steps", newSteps)
+hist.render_to_file("histogramTotalSteps2.svg")
 
 
-mean = sum(steps) // len(steps)
+mean = sum(newSteps) // len(newSteps)
 print("The mean is: " + str(mean))
 
-sortedSteps = sorted(steps)
+sortedSteps = sorted(newSteps)
 median = (sortedSteps[30])
 print("The median is: " + str(median))
-
-
-
-
